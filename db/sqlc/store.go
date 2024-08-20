@@ -20,14 +20,14 @@ type SQLStore struct {
 
 func NewStore(db *sql.DB) Store {
 	return &SQLStore{
-		db: db,
+		db:      db,
 		Queries: New(db),
 	}
 }
 
 // executes a function within a database transaction
 func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
-	tx, err := store.db.BeginTx(ctx, nil) 
+	tx, err := store.db.BeginTx(ctx, nil)
 
 	if err != nil {
 		return err
@@ -48,16 +48,16 @@ func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) erro
 
 type TransferTxParams struct {
 	FromAccountID int64 `json:"from_account_id"`
-	ToAccountID int64 `json:"to_account_id"`
-	Amount int64 `json:"amount"`
+	ToAccountID   int64 `json:"to_account_id"`
+	Amount        int64 `json:"amount"`
 }
 
 type TransferTxResult struct {
-	Transfer Transfers `json:"transfer"`
-	FromAccount Accounts `json:"from_account"`
-	ToAccount Accounts `json:"to_account"`
-	FromEntry Entries `json:"from_entry"`
-	ToEntry Entries `json:"to_entry"`
+	Transfer    Transfers `json:"transfer"`
+	FromAccount Accounts  `json:"from_account"`
+	ToAccount   Accounts  `json:"to_account"`
+	FromEntry   Entries   `json:"from_entry"`
+	ToEntry     Entries   `json:"to_entry"`
 }
 
 // Creates a transfer record, add account entries and update account balance within single db transaction
@@ -69,8 +69,8 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
 			FromAccountID: arg.FromAccountID,
-			ToAccountID: arg.ToAccountID,
-			Amount: arg.Amount,
+			ToAccountID:   arg.ToAccountID,
+			Amount:        arg.Amount,
 		})
 
 		if err != nil {
@@ -79,7 +79,7 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.FromAccountID,
-			Amount: -arg.Amount,
+			Amount:    -arg.Amount,
 		})
 
 		if err != nil {
@@ -88,7 +88,7 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 
 		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.ToAccountID,
-			Amount: arg.Amount,
+			Amount:    arg.Amount,
 		})
 
 		if err != nil {
@@ -117,7 +117,7 @@ func addMoney(
 	amount2 int64,
 ) (account1 Accounts, account2 Accounts, err error) {
 	account1, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-		ID: accountID1,
+		ID:     accountID1,
 		Amount: amount1,
 	})
 
@@ -126,7 +126,7 @@ func addMoney(
 	}
 
 	account2, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-		ID: accountID2,
+		ID:     accountID2,
 		Amount: amount2,
 	})
 

@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomEntry(t *testing.T, account  Accounts) Entries {
+func createRandomEntry(t *testing.T, account Accounts) Entries {
 	arg := CreateEntryParams{
 		AccountID: account.ID,
-		Amount: account.Balance,
+		Amount:    account.Balance,
 	}
 
 	entry, err := testQueries.CreateEntry(context.Background(), arg)
@@ -56,8 +56,8 @@ func TestListEntries(t *testing.T) {
 
 	arg := ListEntriesParams{
 		AccountID: account.ID,
-		Limit: 5,
-		Offset: 5,
+		Limit:     5,
+		Offset:    5,
 	}
 
 	entries, err := testQueries.ListEntries(context.Background(), arg)

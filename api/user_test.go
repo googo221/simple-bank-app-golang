@@ -50,7 +50,7 @@ func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher
 func TestCreateUserAPI(t *testing.T) {
 	user, password := randomUser(t)
 
-	testCases := []struct{
+	testCases := []struct {
 		name          string
 		body          gin.H
 		buildStubs    func(store *mockdb.MockStore)
@@ -72,8 +72,8 @@ func TestCreateUserAPI(t *testing.T) {
 				}
 
 				store.EXPECT().
-				CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
-				Times(1).Return(user, nil)
+					CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
+					Times(1).Return(user, nil)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
@@ -90,8 +90,8 @@ func TestCreateUserAPI(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-				CreateUser(gomock.Any(), gomock.Any()).
-				Times(1).Return(db.Users{}, sql.ErrConnDone)
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(1).Return(db.Users{}, sql.ErrConnDone)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -171,7 +171,7 @@ func TestCreateUserAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			data, err := json.Marshal(tc.body)

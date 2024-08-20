@@ -27,8 +27,8 @@ func TestTransferTx(t *testing.T) {
 			ctx := context.Background()
 			result, err := store.TransferTx(ctx, TransferTxParams{
 				FromAccountID: account1.ID,
-				ToAccountID: account2.ID,
-				Amount: amount,
+				ToAccountID:   account2.ID,
+				Amount:        amount,
 			})
 
 			errs <- err
@@ -101,7 +101,7 @@ func TestTransferTx(t *testing.T) {
 		require.NotContains(t, existed, k)
 		existed[k] = true
 	}
-	
+
 	// check the final updated balances
 	updatedAccount1, err := testQueries.GetAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
@@ -109,8 +109,8 @@ func TestTransferTx(t *testing.T) {
 	updatedAccount2, err := testQueries.GetAccount(context.Background(), account2.ID)
 	require.NoError(t, err)
 	fmt.Println(">> after:", updatedAccount1.Balance, updatedAccount2.Balance)
-	require.Equal(t, account1.Balance - int64(n) * amount, updatedAccount1.Balance)
-	require.Equal(t, account2.Balance + int64(n) * amount, updatedAccount2.Balance)
+	require.Equal(t, account1.Balance-int64(n)*amount, updatedAccount1.Balance)
+	require.Equal(t, account2.Balance+int64(n)*amount, updatedAccount2.Balance)
 }
 
 func TestTransferTxDeadlock(t *testing.T) {
@@ -130,18 +130,17 @@ func TestTransferTxDeadlock(t *testing.T) {
 		fromAcountID := account1.ID
 		toAcountID := account2.ID
 
-		if i % 2 == 1 {
+		if i%2 == 1 {
 			fromAcountID = account2.ID
 			toAcountID = account1.ID
 		}
-
 
 		go func() {
 			ctx := context.Background()
 			_, err := store.TransferTx(ctx, TransferTxParams{
 				FromAccountID: fromAcountID,
-				ToAccountID: toAcountID,
-				Amount: amount,
+				ToAccountID:   toAcountID,
+				Amount:        amount,
 			})
 
 			errs <- err
@@ -152,7 +151,7 @@ func TestTransferTxDeadlock(t *testing.T) {
 		err := <-errs
 		require.NoError(t, err)
 	}
-	
+
 	// check the final updated balances
 	updatedAccount1, err := testQueries.GetAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
